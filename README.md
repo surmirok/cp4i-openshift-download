@@ -2724,4 +2724,4 @@ For issues, questions, or contributions:
 
 *Last Updated: January 2026*
 *Version: 2.0.0*
-*Author: CP4I Downloader Team*
+*Author: Suraj Mirokhe*
