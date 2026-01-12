@@ -1,0 +1,14 @@
+# CP4I Downloader Web Application - Python Dependencies
+
+# Web Framework
+Flask==3.0.0
+Werkzeug==3.0.1
+
+# CORS Support
+Flask-CORS==4.0.0
+
+# HTTP Requests for live data fetching
+requests==2.31.0
+
+# Additional utilities
+python-dotenv==1.0.0

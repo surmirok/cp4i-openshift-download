@@ -1,0 +1,82 @@
+[
+  {
+    "name": "ibm-integration-platform-navigator",
+    "description": "IBM Cloud Pak for Integration - Platform Navigator",
+    "typical_size": "~22GB",
+    "versions": ["8.3.0", "8.2.0", "8.1.0", "7.3.2"],
+    "architecture": ["amd64", "s390x", "ppc64le"],
+    "openshift_versions": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"]
+  },
+  {
+    "name": "ibm-apiconnect",
+    "description": "IBM API Connect",
+    "typical_size": "~38GB",
+    "versions": ["10.0.10.0", "10.0.9.0", "10.0.8.0", "10.0.7.0"],
+    "architecture": ["amd64", "s390x"],
+    "openshift_versions": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"]
+  },
+  {
+    "name": "ibm-mq",
+    "description": "IBM MQ Advanced",
+    "typical_size": "~14GB",
+    "versions": ["9.4.0", "9.3.5", "9.3.4", "9.3.3"],
+    "architecture": ["amd64", "s390x", "ppc64le"],
+    "openshift_versions": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"]
+  },
+  {
+    "name": "ibm-eventstreams",
+    "description": "IBM Event Streams (Apache Kafka)",
+    "typical_size": "~20GB",
+    "versions": ["11.5.0", "11.4.0", "11.3.2", "11.3.1"],
+    "architecture": ["amd64", "s390x"],
+    "openshift_versions": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"]
+  },
+  {
+    "name": "ibm-appconnect",
+    "description": "IBM App Connect Enterprise",
+    "typical_size": "~16GB",
+    "versions": ["13.0.1", "13.0.0", "12.0.11.0", "12.0.10.0"],
+    "architecture": ["amd64", "s390x"],
+    "openshift_versions": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"]
+  },
+  {
+    "name": "ibm-datapower-operator",
+    "description": "IBM DataPower Gateway",
+    "typical_size": "~9GB",
+    "versions": ["1.12.0", "1.11.0", "1.10.3", "1.10.2"],
+    "architecture": ["amd64", "s390x"],
+    "openshift_versions": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"]
+  },
+  {
+    "name": "ibm-integration-asset-repository",
+    "description": "IBM Integration Asset Repository",
+    "typical_size": "~10GB",
+    "versions": ["16.1.0", "2024.6.1", "2024.4.1"],
+    "architecture": ["amd64"],
+    "openshift_versions": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"]
+  },
+  {
+    "name": "ibm-integration-operations-dashboard",
+    "description": "IBM Integration Operations Dashboard",
+    "typical_size": "~8GB",
+    "versions": ["16.1.0", "2024.6.1", "2024.4.1"],
+    "architecture": ["amd64"],
+    "openshift_versions": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"]
+  },
+  {
+    "name": "ibm-aspera-hsts-operator",
+    "description": "IBM Aspera High-Speed Transfer Server",
+    "typical_size": "~4GB",
+    "versions": ["1.6.0", "1.5.11", "1.5.10"],
+    "architecture": ["amd64"],
+    "openshift_versions": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"]
+  },
+  {
+    "name": "ibm-cloud-databases-redis",
+    "description": "IBM Cloud Databases for Redis",
+    "typical_size": "~3GB",
+    "versions": ["1.7.0", "1.6.8", "1.6.7"],
+    "architecture": ["amd64"],
+    "openshift_versions": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"]
+  }
+]

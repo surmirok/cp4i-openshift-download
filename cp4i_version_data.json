@@ -1,0 +1,315 @@
+{
+  "ibm-integration-platform-navigator": {
+    "8.3.0": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2026-01-15",
+      "end_of_support": "2027-07-15",
+      "openshift_compatibility": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"],
+      "dependencies": [],
+      "size_gb": 22,
+      "architecture": ["amd64", "s390x", "ppc64le"],
+      "instance_versions": ["8.3.0", "8.2.1", "8.2.0"],
+      "case_version": "8.3.0",
+      "description": "CASE 8.3.0 includes Platform Navigator instances 8.3.0, 8.2.1, and 8.2.0"
+    },
+    "8.2.0": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2025-10-15",
+      "end_of_support": "2027-04-15",
+      "openshift_compatibility": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19"],
+      "dependencies": [],
+      "size_gb": 20,
+      "architecture": ["amd64", "s390x", "ppc64le"]
+    },
+    "7.3.2": {
+      "is_lts": true,
+      "status": "supported",
+      "release_date": "2024-12-01",
+      "end_of_support": "2026-12-01",
+      "openshift_compatibility": ["4.12", "4.13", "4.14", "4.15", "4.16"],
+      "dependencies": [],
+      "size_gb": 18,
+      "architecture": ["amd64", "s390x"]
+    }
+  },
+  "ibm-apiconnect": {
+    "10.0.10.0": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2026-01-15",
+      "end_of_support": "2027-07-15",
+      "openshift_compatibility": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 38,
+      "architecture": ["amd64", "s390x"]
+    },
+    "10.0.9.0": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2025-10-15",
+      "end_of_support": "2027-04-15",
+      "openshift_compatibility": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 35,
+      "architecture": ["amd64", "s390x"]
+    },
+    "10.0.8.0": {
+      "is_lts": true,
+      "status": "supported",
+      "release_date": "2024-12-01",
+      "end_of_support": "2026-12-01",
+      "openshift_compatibility": ["4.12", "4.13", "4.14", "4.15", "4.16"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 32,
+      "architecture": ["amd64", "s390x"]
+    }
+  },
+  "ibm-mq": {
+    "9.4.0": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2026-01-15",
+      "end_of_support": "2027-07-15",
+      "openshift_compatibility": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 14,
+      "architecture": ["amd64", "s390x", "ppc64le"]
+    },
+    "9.3.5": {
+      "is_lts": true,
+      "status": "supported",
+      "release_date": "2024-12-01",
+      "end_of_support": "2026-12-01",
+      "openshift_compatibility": ["4.12", "4.13", "4.14", "4.15", "4.16"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 12,
+      "architecture": ["amd64", "s390x", "ppc64le"]
+    },
+    "9.3.4": {
+      "is_lts": false,
+      "status": "end_of_life",
+      "release_date": "2024-06-01",
+      "end_of_support": "2025-12-01",
+      "openshift_compatibility": ["4.12", "4.13", "4.14", "4.15"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 11,
+      "architecture": ["amd64", "s390x"]
+    }
+  },
+  "ibm-eventstreams": {
+    "11.5.0": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2026-01-15",
+      "end_of_support": "2027-07-15",
+      "openshift_compatibility": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 20,
+      "architecture": ["amd64", "s390x"]
+    },
+    "11.4.0": {
+      "is_lts": true,
+      "status": "supported",
+      "release_date": "2024-12-01",
+      "end_of_support": "2026-12-01",
+      "openshift_compatibility": ["4.12", "4.13", "4.14", "4.15", "4.16"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 18,
+      "architecture": ["amd64", "s390x"]
+    },
+    "11.3.0": {
+      "is_lts": false,
+      "status": "end_of_life",
+      "release_date": "2024-06-01",
+      "end_of_support": "2025-12-01",
+      "openshift_compatibility": ["4.12", "4.13", "4.14", "4.15"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 16,
+      "architecture": ["amd64"]
+    }
+  },
+  "ibm-appconnect": {
+    "13.0.1": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2026-01-15",
+      "end_of_support": "2027-07-15",
+      "openshift_compatibility": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 16,
+      "architecture": ["amd64", "s390x"]
+    },
+    "12.0.11.0": {
+      "is_lts": true,
+      "status": "supported",
+      "release_date": "2024-12-01",
+      "end_of_support": "2026-12-01",
+      "openshift_compatibility": ["4.12", "4.13", "4.14", "4.15", "4.16"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 14,
+      "architecture": ["amd64", "s390x"]
+    },
+    "12.0.10.0": {
+      "is_lts": false,
+      "status": "end_of_life",
+      "release_date": "2024-06-01",
+      "end_of_support": "2025-12-01",
+      "openshift_compatibility": ["4.12", "4.13", "4.14", "4.15"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 13,
+      "architecture": ["amd64"]
+    }
+  },
+  "ibm-datapower-operator": {
+    "1.12.0": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2026-01-15",
+      "end_of_support": "2027-07-15",
+      "openshift_compatibility": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 9,
+      "architecture": ["amd64", "s390x"]
+    },
+    "1.11.0": {
+      "is_lts": true,
+      "status": "supported",
+      "release_date": "2024-12-01",
+      "end_of_support": "2026-12-01",
+      "openshift_compatibility": ["4.12", "4.13", "4.14", "4.15", "4.16"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 8,
+      "architecture": ["amd64", "s390x"]
+    },
+    "1.10.0": {
+      "is_lts": false,
+      "status": "end_of_life",
+      "release_date": "2024-06-01",
+      "end_of_support": "2025-12-01",
+      "openshift_compatibility": ["4.12", "4.13", "4.14", "4.15"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 7,
+      "architecture": ["amd64"]
+    }
+  },
+  "ibm-integration-asset-repository": {
+    "16.1.0": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2026-01-15",
+      "end_of_support": "2027-07-15",
+      "openshift_compatibility": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 10,
+      "architecture": ["amd64"]
+    },
+    "2024.6.1": {
+      "is_lts": true,
+      "status": "supported",
+      "release_date": "2024-12-01",
+      "end_of_support": "2026-12-01",
+      "openshift_compatibility": ["4.12", "4.13", "4.14", "4.15", "4.16"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 9,
+      "architecture": ["amd64"]
+    }
+  },
+  "ibm-integration-operations-dashboard": {
+    "16.1.0": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2026-01-15",
+      "end_of_support": "2027-07-15",
+      "openshift_compatibility": ["4.14", "4.15", "4.16", "4.17", "4.18", "4.19", "4.20"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 8,
+      "architecture": ["amd64"]
+    },
+    "2024.6.1": {
+      "is_lts": true,
+      "status": "supported",
+      "release_date": "2024-12-01",
+      "end_of_support": "2026-12-01",
+      "openshift_compatibility": ["4.12", "4.13", "4.14", "4.15", "4.16"],
+      "dependencies": ["ibm-integration-platform-navigator"],
+      "size_gb": 7,
+      "architecture": ["amd64"]
+    }
+  },
+  "openshift_versions": {
+    "4.20.5": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2026-01-10",
+      "end_of_support": "2027-06-10",
+      "is_eus": false,
+      "size_gb": 14
+    },
+    "4.19.12": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2025-09-15",
+      "end_of_support": "2027-03-15",
+      "is_eus": false,
+      "size_gb": 13
+    },
+    "4.18.25": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2025-06-15",
+      "end_of_support": "2026-12-15",
+      "is_eus": true,
+      "size_gb": 13
+    },
+    "4.17.18": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2025-03-15",
+      "end_of_support": "2026-09-15",
+      "is_eus": false,
+      "size_gb": 12
+    },
+    "4.16.32": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2024-12-15",
+      "end_of_support": "2026-06-15",
+      "is_eus": true,
+      "size_gb": 12
+    },
+    "4.15.56": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2024-09-15",
+      "end_of_support": "2026-03-15",
+      "is_eus": false,
+      "size_gb": 11
+    },
+    "4.14.42": {
+      "is_lts": false,
+      "status": "supported",
+      "release_date": "2024-06-15",
+      "end_of_support": "2025-12-15",
+      "is_eus": false,
+      "size_gb": 11
+    },
+    "4.13.28": {
+      "is_lts": false,
+      "status": "end_of_life",
+      "release_date": "2024-03-15",
+      "end_of_support": "2025-09-15",
+      "is_eus": false,
+      "size_gb": 10
+    },
+    "4.12.45": {
+      "is_lts": true,
+      "status": "end_of_life",
+      "release_date": "2023-12-15",
+      "end_of_support": "2024-11-15",
+      "is_eus": false,
+      "size_gb": 10
+    }
+  }
+}

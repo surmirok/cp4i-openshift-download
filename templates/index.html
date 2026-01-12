@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CP4I Downloader - Web Interface</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-cloud-download-alt"></i> OpenShift & CP4I Downloader</h1>
+                <p class="subtitle">Web Interface v2.0.0</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="showSystemInfo()">
+                    <i class="fas fa-info-circle"></i> System Info
+                </button>
+                <button class="btn btn-secondary" onclick="showConfig()">
+                    <i class="fas fa-cog"></i> Configuration
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showTab('new-download')">
+                    <i class="fas fa-plus-circle"></i> CP4I Download
+                </button>
+                <button class="tab-btn" onclick="showTab('openshift-mirror')">
+                    <i class="fas fa-server"></i> OpenShift Mirror
+                </button>
+                <button class="tab-btn" onclick="showTab('redhat-operators')">
+                    <i class="fas fa-puzzle-piece"></i> Red Hat Operators
+                </button>
+                <button class="tab-btn" onclick="showTab('active-downloads')">
+                    <i class="fas fa-spinner"></i> Active Downloads
+                    <span class="badge" id="active-count">0</span>
+                </button>
+                <button class="tab-btn" onclick="showTab('history')">
+                    <i class="fas fa-history"></i> History
+                </button>
+            </div>
+
+            <!-- Tab Content: CP4I Download -->
+            <div id="new-download" class="tab-content active">
+                <div class="card">
+                    <h2><i class="fas fa-download"></i> Start CP4I Download</h2>
+                    
+                    <form id="download-form" onsubmit="startDownload(event)">
+                        <!-- Download Mode Selection -->
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-layer-group"></i> Download Mode *
+                            </label>
+                            <div style="display: flex; gap: 15px; margin-top: 10px; flex-wrap: wrap;">
+                                <label class="radio-label">
+                                    <input type="radio" name="download_mode" value="standard" checked onchange="updateDownloadMode()">
+                                    <span><i class="fas fa-download"></i> Standard Download</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="download_mode" value="selective" onchange="updateDownloadMode()">
+                                    <span><i class="fas fa-filter"></i> Selective Download</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="download_mode" value="update" onchange="updateDownloadMode()">
+                                    <span><i class="fas fa-sync-alt"></i> Update Existing</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="download_mode" value="direct_registry" onchange="updateDownloadMode()">
+                                    <span><i class="fas fa-server"></i> Direct to Registry</span>
+                                </label>
+                            </div>
+                            <small class="help-text">Choose download strategy (Direct to Registry mirrors images directly without local storage)</small>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="component">
+                                    <i class="fas fa-cube"></i> Component *
+                                </label>
+                                <select id="component" name="component" required onchange="updateVersions()">
+                                    <option value="">Select a component...</option>
+                                </select>
+                                <small class="help-text">Select the CP4I component to download</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="version">
+                                    <i class="fas fa-tag"></i> Version *
+                                </label>
+                                <input type="text" id="version" name="version" required
+                                       list="version-list" placeholder="e.g., 7.3.2 or select from list">
+                                <datalist id="version-list">
+                                </datalist>
+                                <small class="help-text">Select from list or enter custom version</small>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">
+                                    <i class="fas fa-folder"></i> Directory Name *
+                                </label>
+                                <input type="text" id="name" name="name" required
+                                       placeholder="e.g., pn-7.3.2">
+                                <small class="help-text">Local directory name for download</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="filter">
+                                    <i class="fas fa-filter"></i> Filter (Optional)
+                                </label>
+                                <input type="text" id="filter" name="filter"
+                                       placeholder="e.g., .*management.*">
+                                <small class="help-text">Regex pattern to filter manifests</small>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="home-dir">
+                                    <i class="fas fa-home"></i> Home Directory *
+                                </label>
+                                <input type="text" id="home-dir" name="home_dir" required
+                                       value="/opt/cp4i" placeholder="/opt/cp4i">
+                                <small class="help-text">Base directory for downloads</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="final-registry">
+                                    <i class="fas fa-server"></i> Final Registry *
+                                </label>
+                                <input type="text" id="final-registry" name="final_registry" required
+                                       value="registry.example.com:5000"
+                                       placeholder="registry.example.com:5000">
+                                <small class="help-text">Target registry URL</small>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="registry-auth-file">
+                                    <i class="fas fa-key"></i> Registry Auth File *
+                                </label>
+                                <input type="text" id="registry-auth-file" name="registry_auth_file" required
+                                       value="/root/.docker/config.json"
+                                       placeholder="/root/.docker/config.json">
+                                <small class="help-text">Path to Docker config.json</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="entitlement-key">
+                                    <i class="fas fa-lock"></i> Entitlement Key (Optional)
+                                </label>
+                                <input type="password" id="entitlement-key" name="entitlement_key"
+                                       placeholder="Enter your IBM entitlement key">
+                                <small class="help-text">IBM Cloud Pak entitlement key (optional if set in config)</small>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Download Options -->
+                        <div class="form-group">
+                            <button type="button" class="btn btn-secondary btn-small" onclick="toggleCP4IAdvancedOptions()">
+                                <i class="fas fa-cog"></i> <span id="cp4i-advanced-toggle-text">Show Advanced Options</span>
+                            </button>
+                        </div>
+
+                        <div id="cp4i-advanced-options" style="display: none;">
+                            <h3 style="margin-top: 20px; margin-bottom: 15px; font-size: 1.1rem;">
+                                <i class="fas fa-sliders-h"></i> Advanced Download Options
+                            </h3>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="parallel-downloads">
+                                        <i class="fas fa-tachometer-alt"></i> Parallel Downloads
+                                    </label>
+                                    <input type="number" id="parallel-downloads" name="parallel_downloads"
+                                           value="5" min="1" max="10" placeholder="5">
+                                    <small class="help-text">Number of concurrent image downloads</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="retry-attempts">
+                                        <i class="fas fa-redo"></i> Retry Attempts
+                                    </label>
+                                    <input type="number" id="retry-attempts" name="retry_attempts"
+                                           value="3" min="1" max="10" placeholder="3">
+                                    <small class="help-text">Number of retry attempts for failed downloads</small>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="skip-existing">
+                                        <i class="fas fa-forward"></i> Skip Existing
+                                    </label>
+                                    <select id="skip-existing" name="skip_existing">
+                                        <option value="false">Re-download All</option>
+                                        <option value="true" selected>Skip Existing Images</option>
+                                    </select>
+                                    <small class="help-text">Skip images that already exist locally</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="verify-images">
+                                        <i class="fas fa-shield-alt"></i> Verify Images
+                                    </label>
+                                    <select id="verify-images" name="verify_images">
+                                        <option value="true" selected>Verify After Download</option>
+                                        <option value="false">Skip Verification</option>
+                                    </select>
+                                    <small class="help-text">Verify image integrity after download</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="include-dependencies" name="include_dependencies" checked>
+                                    <span><i class="fas fa-sitemap"></i> Include Dependencies</span>
+                                </label>
+                                <small class="help-text">Download dependent images and operators</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="generate-catalog" name="generate_catalog">
+                                    <span><i class="fas fa-book"></i> Generate Image Catalog</span>
+                                </label>
+                                <small class="help-text">Create a catalog of downloaded images</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="create-backup" name="create_backup">
+                                    <span><i class="fas fa-save"></i> Create Backup Manifest</span>
+                                </label>
+                                <small class="help-text">Save manifest for future reference</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="dry-run" name="dry_run">
+                                <span><i class="fas fa-eye"></i> Dry Run (Preview only, don't download)</span>
+                            </label>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-play"></i> Start Download
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="verifyCP4IImages()">
+                                <i class="fas fa-search"></i> Verify Images (Dry Run)
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="validatePrerequisites()">
+                                <i class="fas fa-check-circle"></i> Validate Prerequisites
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="estimateCP4ISize()">
+                                <i class="fas fa-calculator"></i> Estimate Size
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="previewManifests()">
+                                <i class="fas fa-list"></i> Preview Manifests
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="resetCP4IForm()">
+                                <i class="fas fa-redo"></i> Reset Form
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Component Info Card -->
+                <div class="card" id="component-info" style="display: none;">
+                    <h3><i class="fas fa-info-circle"></i> Component Information</h3>
+                    <div id="component-details"></div>
+                </div>
+
+                <!-- Version Lifecycle Card -->
+                <div class="card" id="version-lifecycle" style="display: none;">
+                    <h3><i class="fas fa-calendar-alt"></i> Version Lifecycle & Support Status</h3>
+                    <div id="lifecycle-details"></div>
+                </div>
+
+                <!-- Compatibility Matrix Card -->
+                <div class="card" id="compatibility-matrix" style="display: none;">
+                    <h3><i class="fas fa-table"></i> Compatibility Matrix</h3>
+                    <div id="compatibility-details"></div>
+                </div>
+            </div>
+
+            <!-- Tab Content: OpenShift Mirror -->
+            <div id="openshift-mirror" class="tab-content">
+                <div class="card">
+                    <h2><i class="fas fa-server"></i> OpenShift Image Mirror</h2>
+                    
+                    <form id="openshift-form" onsubmit="startOpenShiftMirror(event)">
+                        <!-- Mirror Type Selection -->
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-layer-group"></i> Mirror Type *
+                            </label>
+                            <div style="display: flex; gap: 20px; margin-top: 10px;">
+                                <label class="radio-label">
+                                    <input type="radio" name="mirror_type" value="filesystem" checked onchange="updateMirrorType()">
+                                    <span><i class="fas fa-hdd"></i> File System (Air-gapped)</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="mirror_type" value="registry" onchange="updateMirrorType()">
+                                    <span><i class="fas fa-server"></i> Direct to Registry</span>
+                                </label>
+                            </div>
+                            <small class="help-text">Choose mirror destination type</small>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="ocp-release">
+                                    <i class="fas fa-tag"></i> OCP Release *
+                                </label>
+                                <select id="ocp-release-select" name="ocp_release" onchange="handleOCPVersionChange()" required>
+                                    <option value="">Loading versions...</option>
+                                </select>
+                                <input type="text" id="ocp-release-custom" name="ocp_release_custom"
+                                       placeholder="Enter custom version (e.g., 4.15.56)"
+                                       style="display: none; margin-top: 10px;"
+                                       onchange="showOpenShiftVersionDetails()"
+                                       onblur="showOpenShiftVersionDetails()">
+                                <small class="help-text">Select from dropdown or choose "Custom" to enter manually</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="architecture">
+                                    <i class="fas fa-microchip"></i> Architecture *
+                                </label>
+                                <select id="architecture" name="architecture" required>
+                                    <option value="x86_64" selected>x86_64 (AMD64)</option>
+                                    <option value="aarch64">aarch64 (ARM64)</option>
+                                    <option value="ppc64le">ppc64le (Power)</option>
+                                    <option value="s390x">s390x (IBM Z)</option>
+                                    <option value="multi">Multi-Architecture</option>
+                                </select>
+                                <small class="help-text">Target architecture</small>
+                            </div>
+                        </div>
+
+                        <!-- OpenShift Version Details Section -->
+                        <div id="openshift-version-details" style="display: none; margin-top: 20px;">
+                            <div class="info-box">
+                                <div id="openshift-version-content"></div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="local-registry">
+                                    <i class="fas fa-server"></i> Local Registry *
+                                </label>
+                                <input type="text" id="local-registry" name="local_registry" required
+                                       value="registry.example.com:5000"
+                                       placeholder="registry.example.com:5000">
+                                <small class="help-text">Local registry URL</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="local-repository">
+                                    <i class="fas fa-folder"></i> Local Repository *
+                                </label>
+                                <input type="text" id="local-repository" name="local_repository" required
+                                       value="ocp4/openshift4"
+                                       placeholder="ocp4/openshift4">
+                                <small class="help-text">Repository path in local registry</small>
+                            </div>
+                        </div>
+
+                        <div class="form-row" id="filesystem-path-row">
+                            <div class="form-group">
+                                <label for="removable-media-path">
+                                    <i class="fas fa-hdd"></i> Removable Media Path *
+                                </label>
+                                <input type="text" id="removable-media-path" name="removable_media_path"
+                                       value="/opt/ocp15"
+                                       placeholder="/opt/ocp15">
+                                <small class="help-text">Path for mirrored images (file system mirror)</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="local-secret-json">
+                                    <i class="fas fa-key"></i> Registry Auth File *
+                                </label>
+                                <input type="text" id="local-secret-json" name="local_secret_json" required
+                                       value="/root/.docker/config.json"
+                                       placeholder="/root/.docker/config.json">
+                                <small class="help-text">Path to Docker config.json</small>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Options -->
+                        <div class="form-group">
+                            <button type="button" class="btn btn-secondary btn-small" onclick="toggleAdvancedOptions()">
+                                <i class="fas fa-cog"></i> <span id="advanced-toggle-text">Show Advanced Options</span>
+                            </button>
+                        </div>
+
+                        <div id="advanced-options" style="display: none;">
+                            <h3 style="margin-top: 20px; margin-bottom: 15px; font-size: 1.1rem;">
+                                <i class="fas fa-sliders-h"></i> Advanced Options
+                            </h3>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="max-per-registry">
+                                        <i class="fas fa-tachometer-alt"></i> Max Per Registry
+                                    </label>
+                                    <input type="number" id="max-per-registry" name="max_per_registry"
+                                           value="6" min="1" max="20" placeholder="6">
+                                    <small class="help-text">Maximum concurrent downloads per registry</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="continue-on-error">
+                                        <i class="fas fa-forward"></i> Continue on Error
+                                    </label>
+                                    <select id="continue-on-error" name="continue_on_error">
+                                        <option value="false">Stop on Error</option>
+                                        <option value="true">Continue on Error</option>
+                                    </select>
+                                    <small class="help-text">Behavior when encountering errors</small>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="skip-verification">
+                                        <i class="fas fa-shield-alt"></i> Skip Verification
+                                    </label>
+                                    <select id="skip-verification" name="skip_verification">
+                                        <option value="false">Verify Images</option>
+                                        <option value="true">Skip Verification</option>
+                                    </select>
+                                    <small class="help-text">Skip image verification (faster but less safe)</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="filter-by-os">
+                                        <i class="fas fa-filter"></i> Filter by OS
+                                    </label>
+                                    <input type="text" id="filter-by-os" name="filter_by_os"
+                                           placeholder="linux/amd64,linux/arm64">
+                                    <small class="help-text">Filter images by OS (comma-separated)</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="include-operators" name="include_operators">
+                                    <span><i class="fas fa-puzzle-piece"></i> Include Operator Catalog Images</span>
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="include-samples" name="include_samples">
+                                    <span><i class="fas fa-images"></i> Include Sample Images</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="ocp-dry-run" name="dry_run">
+                                <span><i class="fas fa-eye"></i> Dry Run (Verify images only, don't download)</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="print-idms" name="print_idms">
+                                <span><i class="fas fa-print"></i> Print IDMS Instructions</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="generate-icsp" name="generate_icsp">
+                                <span><i class="fas fa-file-code"></i> Generate ImageContentSourcePolicy (ICSP)</span>
+                            </label>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-play"></i> Start Mirror
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="verifyOCPImages()">
+                                <i class="fas fa-check-circle"></i> Verify Images
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="estimateSize()">
+                                <i class="fas fa-calculator"></i> Estimate Size
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="resetOpenShiftForm()">
+                                <i class="fas fa-redo"></i> Reset Form
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Quick Actions Card -->
+                <div class="card">
+                    <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                        <button class="btn btn-secondary btn-small" onclick="loadPreset('latest')">
+                            <i class="fas fa-star"></i> Latest Stable
+                        </button>
+                        <button class="btn btn-secondary btn-small" onclick="loadPreset('lts')">
+                            <i class="fas fa-shield-alt"></i> LTS Version
+                        </button>
+                        <button class="btn btn-secondary btn-small" onclick="loadPreset('minimal')">
+                            <i class="fas fa-compress"></i> Minimal Mirror
+                        </button>
+                        <button class="btn btn-secondary btn-small" onclick="loadPreset('full')">
+                            <i class="fas fa-expand"></i> Full Mirror
+                        </button>
+                    </div>
+                </div>
+
+                <!-- OpenShift Info Card -->
+                <div class="card">
+                    <h3><i class="fas fa-info-circle"></i> OpenShift Mirror Information</h3>
+                    <div class="info-box">
+                        <p><strong>Mirror Types:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li><strong>File System:</strong> Mirror to local directory for air-gapped installations</li>
+                            <li><strong>Direct to Registry:</strong> Mirror directly to your private registry</li>
+                        </ul>
+                        <p style="margin-top: 15px;"><strong>Process:</strong></p>
+                        <ol style="margin-left: 20px;">
+                            <li>Verify images using dry run (recommended)</li>
+                            <li>Estimate download size</li>
+                            <li>Start mirror process</li>
+                            <li>Generate IDMS/ICSP for cluster configuration</li>
+                        </ol>
+                        <p style="margin-top: 15px;"><strong>Typical Sizes:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>Core Release: ~8-12 GB</li>
+                            <li>With Operators: ~15-25 GB</li>
+                            <li>Full Mirror: ~30-50 GB</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Recent Mirrors Card -->
+                <div class="card" id="recent-mirrors-card" style="display: none;">
+                    <h3><i class="fas fa-history"></i> Recent Mirrors</h3>
+                    <div id="recent-mirrors-list"></div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Red Hat Operators -->
+            <div id="redhat-operators" class="tab-content">
+                <div class="card">
+                    <h2><i class="fas fa-puzzle-piece"></i> Red Hat Operators Mirror</h2>
+                    <p style="margin-bottom: 20px;">Download Red Hat Operators using ImageSetConfiguration for disconnected environments</p>
+                    
+                    <form id="operators-form" onsubmit="startOperatorsMirror(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="operator-catalog-version">
+                                    <i class="fas fa-tag"></i> Operator Catalog Version *
+                                </label>
+                                <select id="operator-catalog-version" name="catalog_version" required>
+                                    <option value="4.20">v4.20 (Latest)</option>
+                                    <option value="4.19">v4.19</option>
+                                    <option value="4.18">v4.18</option>
+                                    <option value="4.17">v4.17</option>
+                                    <option value="4.16">v4.16</option>
+                                    <option value="4.15">v4.15</option>
+                                    <option value="4.14">v4.14</option>
+                                </select>
+                                <small class="help-text">Red Hat operator catalog version</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="operator-architecture">
+                                    <i class="fas fa-microchip"></i> Architecture *
+                                </label>
+                                <select id="operator-architecture" name="architecture" required>
+                                    <option value="amd64" selected>amd64 (x86_64)</option>
+                                    <option value="arm64">arm64 (aarch64)</option>
+                                    <option value="ppc64le">ppc64le (Power)</option>
+                                    <option value="s390x">s390x (IBM Z)</option>
+                                    <option value="multi">Multi-Architecture</option>
+                                </select>
+                                <small class="help-text">Target architecture</small>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="operator-local-path">
+                                    <i class="fas fa-folder"></i> Local Storage Path *
+                                </label>
+                                <input type="text" id="operator-local-path" name="local_path" required
+                                       value="/opt/operators"
+                                       placeholder="/opt/operators">
+                                <small class="help-text">Local path for mirrored operator images</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="operator-auth-file">
+                                    <i class="fas fa-key"></i> Registry Auth File *
+                                </label>
+                                <input type="text" id="operator-auth-file" name="auth_file" required
+                                       value="/root/.docker/config.json"
+                                       placeholder="/root/.docker/config.json">
+                                <small class="help-text">Path to Docker config.json</small>
+                            </div>
+                        </div>
+
+                        <!-- Mirror Type Selection -->
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-exchange-alt"></i> Mirror Type *
+                            </label>
+                            <div style="display: flex; gap: 20px; margin-top: 10px;">
+                                <label class="radio-label">
+                                    <input type="radio" name="operator_mirror_type" value="filesystem" checked onchange="updateOperatorMirrorType()">
+                                    <span><i class="fas fa-hdd"></i> File System</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="operator_mirror_type" value="registry" onchange="updateOperatorMirrorType()">
+                                    <span><i class="fas fa-server"></i> Direct to Registry</span>
+                                </label>
+                            </div>
+                            <small class="help-text">Choose mirror destination type</small>
+                        </div>
+
+                        <!-- Target Registry (for Direct to Registry) -->
+                        <div id="operator-target-registry-section" style="display: none;">
+                            <div class="form-group">
+                                <label for="operator-target-registry">
+                                    <i class="fas fa-server"></i> Target Registry *
+                                </label>
+                                <input type="text" id="operator-target-registry" name="target_registry"
+                                       placeholder="registry.example.com:5000">
+                                <small class="help-text">Target registry for direct mirroring (e.g., registry.example.com:5000)</small>
+                            </div>
+                        </div>
+
+                        <!-- Operators Configuration -->
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-list-ul"></i> Operators Configuration *
+                            </label>
+                            <div id="operators-list-container">
+                                <!-- Operator entries will be added here dynamically -->
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="addOperatorEntry()" style="margin-top: 10px;">
+                                <i class="fas fa-plus"></i> Add Operator
+                            </button>
+                            <small class="help-text">Add operators with their specific channels</small>
+                        </div>
+
+                        <!-- Additional Images -->
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="include-ubi" name="include_ubi" checked>
+                                <span><i class="fas fa-box"></i> Include UBI Base Images</span>
+                            </label>
+                            <small class="help-text">Include Red Hat Universal Base Images (UBI)</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="include-helm" name="include_helm">
+                                <span><i class="fas fa-ship"></i> Include Helm Charts</span>
+                            </label>
+                            <small class="help-text">Include Helm chart repositories</small>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-play"></i> Start Mirror
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="generateImageSetConfig()">
+                                <i class="fas fa-file-code"></i> Generate Config
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="validateOperatorConfig()">
+                                <i class="fas fa-check-circle"></i> Validate
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="resetOperatorsForm()">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Operator Presets Info -->
+                <div class="card">
+                    <h3><i class="fas fa-info-circle"></i> Operator Collections</h3>
+                    <div class="info-box">
+                        <p><strong>OpenShift Logging:</strong> Cluster Logging, Elasticsearch, Loki, Logging View Plugin</p>
+                        <p><strong>Keycloak:</strong> Red Hat Build of Keycloak (RHBK), Keycloak Operator</p>
+                        <p><strong>Cert Manager:</strong> Cert Manager Operator, OpenShift Cert Manager</p>
+                        <p><strong>Open Liberty:</strong> Open Liberty Operator, WebSphere Liberty Operator</p>
+                        <p><strong>DevOps Tools:</strong> Git Ops, Pipelines, Advanced Cluster Management, Compliance</p>
+                        <p><strong>Storage:</strong> OpenShift Data Foundation, Container Storage, Local Storage</p>
+                        <p><strong>Networking:</strong> Service Mesh, Network Observability, Load Balancer</p>
+                        <p><strong>Security:</strong> Advanced Cluster Security, Compliance, File Integrity</p>
+                    </div>
+                </div>
+
+                <!-- ImageSetConfiguration Preview -->
+                <div class="card" id="imageset-config-preview" style="display: none;">
+                    <h3><i class="fas fa-file-code"></i> ImageSetConfiguration Preview</h3>
+                    <div id="imageset-config-content"></div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Active Downloads -->
+            <div id="active-downloads" class="tab-content">
+                <div class="card">
+                    <h2><i class="fas fa-spinner fa-spin"></i> Active Downloads</h2>
+                    <div id="active-downloads-list">
+                        <p class="empty-state">No active downloads</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: History -->
+            <div id="history" class="tab-content">
+                <div class="card">
+                    <h2><i class="fas fa-history"></i> Download History</h2>
+                    <div id="history-list">
+                        <p class="empty-state">No download history</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: System Info -->
+    <div id="system-info-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-server"></i> System Information</h2>
+                <button class="close-btn" onclick="closeModal('system-info-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="system-info-content">
+                <div class="loading">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Configuration -->
+    <div id="config-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> Configuration</h2>
+                <button class="close-btn" onclick="closeModal('config-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="config-form" onsubmit="saveConfig(event)">
+                    <div class="form-group">
+                        <label for="config-content">Configuration File Content</label>
+                        <textarea id="config-content" rows="15"
+                                  placeholder="# CP4I Downloader Configuration&#10;CP4I_ENTITLEMENT_KEY=your_key_here&#10;..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Configuration
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="loadConfig()">
+                            <i class="fas fa-sync"></i> Reload
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Download Details -->
+    <div id="download-details-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2><i class="fas fa-info-circle"></i> Download Details</h2>
+                <button class="close-btn" onclick="closeModal('download-details-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="download-details-content">
+                <div class="loading">Loading...</div>
+            </div>
+        </div>
+    <!-- Retry modal removed - retry now uses original configuration directly -->
+
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container"></div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}?v=3.4.3"></script>
+</body>
+</html>

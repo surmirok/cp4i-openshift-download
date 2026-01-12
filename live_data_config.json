@@ -1,0 +1,105 @@
+{
+  "data_sources": {
+    "ibm_registry": {
+      "enabled": true,
+      "base_url": "https://cp.icr.io/v2",
+      "catalog_api": "https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case",
+      "timeout": 30,
+      "retry_attempts": 3,
+      "cache_ttl": 3600
+    },
+    "redhat_registry": {
+      "enabled": true,
+      "base_url": "https://quay.io/api/v1",
+      "openshift_releases": "https://api.openshift.com/api/upgrades_info/v1/graph",
+      "operator_catalog": "https://registry.redhat.io/v2",
+      "timeout": 30,
+      "retry_attempts": 3,
+      "cache_ttl": 3600
+    },
+    "github_sources": {
+      "enabled": true,
+      "ibm_case_repo": "https://api.github.com/repos/IBM/cloud-pak/contents/repo/case",
+      "openshift_release_repo": "https://api.github.com/repos/openshift/release",
+      "timeout": 30,
+      "retry_attempts": 3,
+      "cache_ttl": 3600
+    }
+  },
+  "components": {
+    "ibm-integration-platform-navigator": {
+      "registry_path": "cp/ibm-integration-platform-navigator-operator-catalog",
+      "case_name": "ibm-integration-platform-navigator",
+      "github_path": "ibm-integration-platform-navigator"
+    },
+    "ibm-apiconnect": {
+      "registry_path": "cp/ibm-apiconnect-operator-catalog",
+      "case_name": "ibm-apiconnect",
+      "github_path": "ibm-apiconnect"
+    },
+    "ibm-mq": {
+      "registry_path": "cp/ibm-mq-operator-catalog",
+      "case_name": "ibm-mq",
+      "github_path": "ibm-mq"
+    },
+    "ibm-eventstreams": {
+      "registry_path": "cp/ibm-eventstreams-operator-catalog",
+      "case_name": "ibm-eventstreams",
+      "github_path": "ibm-eventstreams"
+    },
+    "ibm-appconnect": {
+      "registry_path": "cp/ibm-appconnect-operator-catalog",
+      "case_name": "ibm-appconnect",
+      "github_path": "ibm-appconnect"
+    },
+    "ibm-datapower-operator": {
+      "registry_path": "cp/ibm-datapower-operator-catalog",
+      "case_name": "ibm-datapower-operator",
+      "github_path": "ibm-datapower-operator"
+    },
+    "ibm-integration-asset-repository": {
+      "registry_path": "cp/ibm-integration-asset-repository-operator-catalog",
+      "case_name": "ibm-integration-asset-repository",
+      "github_path": "ibm-integration-asset-repository"
+    },
+    "ibm-integration-operations-dashboard": {
+      "registry_path": "cp/ibm-integration-operations-dashboard-operator-catalog",
+      "case_name": "ibm-integration-operations-dashboard",
+      "github_path": "ibm-integration-operations-dashboard"
+    }
+  },
+  "openshift": {
+    "channels": [
+      "stable-4.20",
+      "stable-4.19",
+      "stable-4.18",
+      "stable-4.17",
+      "stable-4.16",
+      "stable-4.15",
+      "stable-4.14"
+    ],
+    "architectures": [
+      "x86_64",
+      "aarch64",
+      "ppc64le",
+      "s390x"
+    ]
+  },
+  "cache": {
+    "enabled": true,
+    "directory": ".cache",
+    "max_age_hours": 24,
+    "cleanup_on_startup": false
+  },
+  "fallback": {
+    "use_local_data": true,
+    "local_version_file": "cp4i_version_data.json",
+    "local_cases_file": "sample-cases.json",
+    "local_versions_file": "sample-versions.json"
+  },
+  "update_schedule": {
+    "auto_update": false,
+    "check_interval_hours": 24,
+    "update_time": "02:00"
+  }
+}
